@@ -1,0 +1,26 @@
+# Gradle files
+.gradle
+.gradletasknamecache
+**/build/
+!**/src/**/build/
+build
+
+# Gradle wrapper exceptions
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+bin
+dist
+node_modules
+openapitools.json
+
+src/generated-source
+src/main/resources/openapi.yaml
+
+# IDE files
+.idea
+.project
+.classpath
