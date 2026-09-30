@@ -1,0 +1,84 @@
+asyncapi: 3.0.0
+info:
+  title: Iloggning Async API
+  version: 0.1.0
+  description: Iloggning Async API för att logga vilken information som visas för en handläggare när en regel öppnas
+
+channels:
+  iloggning.uppgiftsaccess:
+    messages:
+      UppgiftsaccessMessage:
+        $ref: '#/components/messages/UppgiftsaccessMessage'
+
+operations:
+  UppgiftsaccessMessage:
+    action: receive
+    channel:
+      $ref: '#/channels/iloggning.uppgiftsaccess'
+    messages:
+      - $ref: '#/channels/iloggning.uppgiftsaccess/messages/UppgiftsaccessMessage'
+    summary: Konsumerar event varje gång en handläggare öppnar en regel och får information visad
+
+components:
+  messages:
+    UppgiftsaccessMessage:
+      payload:
+        $ref: '#/components/schemas/UppgiftsaccessMessage'
+
+  schemas:
+    UppgiftsaccessMessage:
+      type: object
+      title: UppgiftsaccessMessage
+      required:
+        - handlaggare
+        - tidpunkt
+        - handlaggningId
+        - regel
+        - individer
+      properties:
+        handlaggare:
+          $ref: '#/components/schemas/Idtyp'
+          description: Handläggaren som fick informationen visad
+        tidpunkt:
+          type: string
+          format: date-time
+          description: Tidpunkt då informationen visades
+        handlaggningId:
+          type: string
+          format: uuid
+          description: Unikt ID som identifierar handläggningsärendet
+        uppgiftId:
+          type: string
+          format: uuid
+          description: Unikt ID som identifierar uppgiften som öppnades
+        regel:
+          type: string
+          description: Regeln vars information visades, t.ex. rtf-manuell
+        individer:
+          type: array
+          description: Individerna vars information visades. Innehåller personuppgifter.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Idtyp'
+        visadInformation:
+          type: array
+          description: Vilken information som visades. Innehåll definieras i FKPOC-1103.
+          items:
+            type: string
+
+    Idtyp:
+      type: object
+      title: Idtyp
+      required:
+        - typId
+        - varde
+      properties:
+        typId:
+          type: string
+          description: Unikt ID som identifierar vilken typ av värde som anges
+        varde:
+          type: string
+          description: ID-värde som identifieras av typ
+      example:
+        typId: "4c34906c-03d9-425f-9a1a-062ef6eb88c7"
+        varde: "19901010-1234"
