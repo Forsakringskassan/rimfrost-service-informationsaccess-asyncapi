@@ -1,3 +1,3 @@
-# rimfrost-service-iloggning-asyncapi changelog
+# rimfrost-service-informationsaccess-asyncapi changelog
 
-Changelog of rimfrost-service-iloggning-asyncapi.
+Changelog of rimfrost-service-informationsaccess-asyncapi.

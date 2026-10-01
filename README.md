@@ -1,3 +1,3 @@
-# rimfrost-service-iloggning-asyncapi
+# rimfrost-service-informationsaccess-asyncapi
 
-AsyncAPI-specifikation för iloggning av uppgiftsaccess, dvs. loggning av vilken information som visas för en handläggare när en regel öppnas i portalen.
+AsyncAPI-specifikation för informationsaccess-event, som publiceras av BFF:erna varje gång information har visats för en användare. Eventet kan konsumeras av t.ex. iloggning.
