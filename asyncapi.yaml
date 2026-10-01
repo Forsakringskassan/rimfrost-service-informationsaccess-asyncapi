@@ -1,0 +1,115 @@
+asyncapi: 3.0.0
+info:
+  title: Informationsaccess Async API
+  version: 0.1.0
+  description: Informationsaccess Async API för event som publiceras när information har visats för en användare
+
+channels:
+  informationsaccess:
+    messages:
+      InformationsaccessEvent:
+        $ref: '#/components/messages/InformationsaccessEvent'
+
+operations:
+  informationsaccessEvent:
+    action: send
+    channel:
+      $ref: '#/channels/informationsaccess'
+    messages:
+      - $ref: '#/channels/informationsaccess/messages/InformationsaccessEvent'
+    summary: Publicerar event varje gång information har visats för en användare
+
+components:
+  messages:
+    InformationsaccessEvent:
+      payload:
+        $ref: '#/components/schemas/InformationsaccessEvent'
+      examples:
+        - name: Regel
+          summary: Användare öppnar en regel
+          payload:
+            anvandare:
+              typId: "9b1e4f2a-6c3d-4e8b-a7f5-2d0c1b9e8a36"
+              varde: "H123456"
+            tidpunkt: "2026-09-30T08:35:40+02:00"
+            kalla: rimfrost-regel-rtf-manuell-bff
+            handlaggningId: "3f1c2a9e-7b4d-4e2a-9c1f-5a6b7c8d9e0f"
+            uppgiftId: "8a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d"
+            regelId: "a11f3429-3a6b-4389-ba1c-c2747b0fb45b"
+            regelVersion: "1"
+            individer:
+              - typId: "4c34906c-03d9-425f-9a1a-062ef6eb88c7"
+                varde: "19901010-1234"
+        - name: Uppgiftslista
+          summary: Användare får en uppgift visad i portalen
+          payload:
+            anvandare:
+              typId: "9b1e4f2a-6c3d-4e8b-a7f5-2d0c1b9e8a36"
+              varde: "H123456"
+            tidpunkt: "2026-09-30T08:30:12+02:00"
+            kalla: rimfrost-portal-bff
+            handlaggningId: "3f1c2a9e-7b4d-4e2a-9c1f-5a6b7c8d9e0f"
+            uppgiftId: "8a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d"
+            individer:
+              - typId: "4c34906c-03d9-425f-9a1a-062ef6eb88c7"
+                varde: "19901010-1234"
+
+  schemas:
+    InformationsaccessEvent:
+      type: object
+      title: InformationsaccessEvent
+      required:
+        - anvandare
+        - tidpunkt
+        - kalla
+      properties:
+        # visadInformation (vilken information som visades) läggs till i FKPOC-1103
+        anvandare:
+          $ref: '#/components/schemas/Idtyp'
+          description: Användaren som fick informationen visad, t.ex. en handläggare
+        tidpunkt:
+          type: string
+          format: date-time
+          description: Tidpunkt då informationen visades
+        kalla:
+          type: string
+          description: Applikationen som visade informationen och publicerade eventet
+          example: rimfrost-portal-bff
+        handlaggningId:
+          type: string
+          format: uuid
+          description: Unikt ID som identifierar handläggningsärendet, om informationen hör till ett ärende
+        uppgiftId:
+          type: string
+          format: uuid
+          description: Unikt ID som identifierar uppgiften, om informationen visades via en uppgift
+        regelId:
+          type: string
+          format: uuid
+          description: Unikt ID som identifierar regeln, om informationen visades i en regel
+        regelVersion:
+          type: string
+          description: Version av regeln, om informationen visades i en regel
+        individer:
+          type: array
+          description: Individerna vars information visades, om informationen gäller individer. Innehåller personuppgifter.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Idtyp'
+
+    Idtyp:
+      type: object
+      title: Idtyp
+      required:
+        - typId
+        - varde
+      properties:
+        typId:
+          type: string
+          description: Unikt ID som identifierar vilken typ av värde som anges
+        varde:
+          type: string
+          description: ID-värde som identifieras av typ
+      example:
+        typId: "4c34906c-03d9-425f-9a1a-062ef6eb88c7"
+        varde: "19901010-1234"
