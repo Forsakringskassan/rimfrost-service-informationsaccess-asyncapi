@@ -24,6 +24,18 @@ components:
     UppgiftsaccessMessage:
       payload:
         $ref: '#/components/schemas/UppgiftsaccessMessage'
+      examples:
+        - payload:
+            handlaggare:
+              typId: "9b1e4f2a-6c3d-4e8b-a7f5-2d0c1b9e8a36"
+              varde: "H123456"
+            tidpunkt: "2026-09-30T08:35:40+02:00"
+            handlaggningId: "3f1c2a9e-7b4d-4e2a-9c1f-5a6b7c8d9e0f"
+            uppgiftId: "8a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d"
+            regel: rtf-manuell
+            individer:
+              - typId: "4c34906c-03d9-425f-9a1a-062ef6eb88c7"
+                varde: "19901010-1234"
 
   schemas:
     UppgiftsaccessMessage:
@@ -33,6 +45,7 @@ components:
         - handlaggare
         - tidpunkt
         - handlaggningId
+        - uppgiftId
         - regel
         - individer
       properties:
@@ -53,18 +66,14 @@ components:
           description: Unikt ID som identifierar uppgiften som öppnades
         regel:
           type: string
-          description: Regeln vars information visades, t.ex. rtf-manuell
+          description: Namnet på regeln vars information visades
+          example: rtf-manuell
         individer:
           type: array
           description: Individerna vars information visades. Innehåller personuppgifter.
           minItems: 1
           items:
             $ref: '#/components/schemas/Idtyp'
-        visadInformation:
-          type: array
-          description: Vilken information som visades. Innehåll definieras i FKPOC-1103.
-          items:
-            type: string
 
     Idtyp:
       type: object
