@@ -32,7 +32,8 @@ components:
             tidpunkt: "2026-09-30T08:35:40+02:00"
             handlaggningId: "3f1c2a9e-7b4d-4e2a-9c1f-5a6b7c8d9e0f"
             uppgiftId: "8a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d"
-            regel: rtf-manuell
+            regelId: "a11f3429-3a6b-4389-ba1c-c2747b0fb45b"
+            regelVersion: "1"
             individer:
               - typId: "4c34906c-03d9-425f-9a1a-062ef6eb88c7"
                 varde: "19901010-1234"
@@ -46,9 +47,10 @@ components:
         - tidpunkt
         - handlaggningId
         - uppgiftId
-        - regel
+        - regelId
         - individer
       properties:
+        # visadInformation (vilken information som visades) läggs till i FKPOC-1103
         handlaggare:
           $ref: '#/components/schemas/Idtyp'
           description: Handläggaren som fick informationen visad
@@ -64,10 +66,13 @@ components:
           type: string
           format: uuid
           description: Unikt ID som identifierar uppgiften som öppnades
-        regel:
+        regelId:
           type: string
-          description: Namnet på regeln vars information visades
-          example: rtf-manuell
+          format: uuid
+          description: Unikt ID som identifierar regeln vars information visades
+        regelVersion:
+          type: string
+          description: Version av regeln vars information visades
         individer:
           type: array
           description: Individerna vars information visades. Innehåller personuppgifter.
