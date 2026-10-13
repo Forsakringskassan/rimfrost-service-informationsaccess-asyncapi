@@ -27,7 +27,7 @@ den enda källan med innehåll.
 | Märkning | Betydelse |
 |---|---|
 | **[1080]** | Följer av beskrivningen i FKPOC-1080. |
-| **[1097]** | Redan beslutat i PR #1 (Lisa Wedin, godkänd av Ulf Slunga 2026-10-01) och infört i `asyncapi.yaml`. |
+| **[1097]** | Redan beslutat i PR #1 och infört i `asyncapi.yaml`. |
 | **[förslag]** | Förslag från Rimfrost. Inte förankrat med FK — behöver bekräftas. |
 
 En stor del av kraven är **[förslag]**. De är framtagna genom tolkning av diskussioner inom
@@ -48,13 +48,13 @@ Rimfrosts ansvar slutar vid det publicerade eventet.
 
 ## Avgränsning
 
-Utanför kraven ligger, med ärende och ansvarig enligt FKPOC-1101:
+Utanför kraven ligger, med ärende enligt FKPOC-1101:
 
-- **FKPOC-1098** (Lars Persson) — BFF:en använder asyncapi:t för att logga uppgiftsaccess.
+- **FKPOC-1098** — BFF:en använder asyncapi:t för att logga uppgiftsaccess.
   Producentens implementation.
-- **FKPOC-1103** (Julia Olsson) — utred vilken extra information som behöver tillföras till
+- **FKPOC-1103** — utred vilken extra information som behöver tillföras till
   reglers get response, så att BFF får det som krävs för att fylla eventet.
-- **FKPOC-1102** (Julia Olsson) — scenario med uppgiftsaccess-event i `rimfrost-kubernetes`.
+- **FKPOC-1102** — scenario med uppgiftsaccess-event i `rimfrost-kubernetes`.
 - **FKPOC-1099** (Klart) — borttagen befintlig loggning av uppgiftsaccess till förmån för
   async i BFF.
 
@@ -79,35 +79,34 @@ Utanför ligger också:
 - **IA-FR-01.2** *[förslag]* Avgörande är vad som går från BFF till klient. Information som
   hämtats internt i backend men aldrig skickats vidare ska inte loggas, och det ska inte
   heller krävas kännedom om vad klienten faktiskt renderat på skärmen.
-- **IA-FR-01.3** *[förslag]* Om ett svar innehåller flera uppgifter, t.ex. en uppgiftslista,
-  publiceras ett event per uppgift — inte ett för hela svaret. Mimer kopplar via uppgiftens
-  ID, och IA-FR-02.2 kräver ändå ett event per individ.
-- **IA-FR-01.4** *[förslag]* Flera BFF:er kan publicera var sitt event för det användaren
+- **IA-FR-01.3** *[förslag]* Flera BFF:er kan publicera var sitt event för det användaren
   upplever som en sammanhängande handling, t.ex. en uppgiftslista i portalen följd av att
   en uppgift öppnas i en regel. Det är avsiktligt och ska inte behandlas som dubbletter.
 
-### IA-FR-02 — Separerbarhet per individ
+> **Antagande, obekräftat:** loggningen utlöses när en handläggare öppnar en uppgift, inte
+> när en uppgiftslista visas. Det stämmer med att FKPOC-1080 bara beskriver "en manuell
+> uppgifts GUI", men behöver bekräftas — se Öppna punkter.
+
+### IA-FR-02 — Ett event per visning
 
 Enligt FKPOC-1080 sker uppdelningen per individ hos Mimer, genom kopplingen uppgift →
-process → ärendedata. Den kopplingen bär bara om datapaketet rör exakt en individ.
+process → ärendedata. Det är alltså inget Rimfrost behöver lösa i kontraktet, och ett
+registerutdrag per individ kan produceras utan att eventet delas upp.
 
-> **Antagande, delvis verifierat 2026-10-12:** en regels svar rör en individ i taget.
-> Kontrollerat mot `rimfrost-regel-rtf-manuell-bff` och `rimfrost-regel-bekraftabeslut-bff` —
-> båda returnerar `kund` i singular, utan lista. Kraven nedan vilar på det.
->
-> Det gäller **inte** portalens uppgiftslista. `OperativUppgift` i `rimfrost-portal-bff` bär
-> `individer` som lista, och OUL:s asyncapi beskriver fältet som "Lista av individer i
-> ärendet". Den vyn är parkerad, se Öppna punkter. Tas den in i omfattningen behöver
-> `individer` bära visad information per individ, vilket är en brytande kontraktsändring.
+- **IA-FR-02.1** *[1080]* Allt som visades vid ett tillfälle ska ligga i samma meddelande.
+  Eventet ska inte delas upp i flera, varken per individ eller per uppgift. FKPOC-1080:
+  *"ett datapaket på en Kafkatopic som Mimer konsumerar."*
 
-- **IA-FR-02.1** *[förslag]* Loggen ska gå att dela upp per individ, så att ett utdrag till
-  en enskild person kan produceras utan att röja uppgifter om någon annan individ.
-- **IA-FR-02.2** *[förslag]* Ett event ska röra exakt en individ. Så länge det gäller är
-  eventnivån också individnivån, och `visadInformation` kan ligga kvar på eventnivå utan att
-  separerbarheten i IA-FR-02.1 går förlorad.
-- **IA-FR-02.3** *[förslag]* Om ett svar någon gång visar uppgifter om flera individer ska
-  producenten publicera ett event per individ, inte ett event med flera. Det är en regel för
-  producenten och kräver ingen ändring av kontraktet.
+> **Rationale:** ett tidigare utkast krävde ett event per individ. Det är struket. En
+> uppdelning gör den totala bilden av vad som visades vid en viss tidpunkt svårare att
+> sammanställa, en konsument kan inte veta att den fått alla delar utan att eventet bär ett
+> förväntat antal, och det finns ingen väg att be om meddelande 5 av 7 igen.
+
+> **Kontrollerat:** ett regelsvar rör en individ i taget.
+> `rimfrost-regel-rtf-manuell-bff` och `rimfrost-regel-bekraftabeslut-bff` returnerar båda
+> `kund` i singular, utan lista. Det gäller **inte** portalens uppgiftslista —
+> `OperativUppgift` i `rimfrost-portal-bff` bär `individer` som lista. Den vyn är parkerad,
+> se Öppna punkter.
 
 ### IA-FR-03 — Vilka individer som ingår
 
@@ -127,8 +126,10 @@ beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kont
 - **IA-FR-04.1** *[1080]* Eventet ska innehålla den data som hämtades för att visas för
   användaren. FKPOC-1080: *"datapaketet innehåller det data som en användare hämtar för att
   visa i en manuell uppgifts GUI."*
-- **IA-FR-04.2** *[förslag]* Datan ligger på eventnivå. Eftersom ett event rör exakt en
-  individ (IA-FR-02.2) är det detsamma som per individ.
+- **IA-FR-04.2** *[förslag]* Datan ligger på eventnivå och behöver ingen fastställd
+  struktur i kontraktet. Ett fritt objekt (`data: {}`) räcker — eventet är tänkt för
+  granskning, om det finns misstanke om att en handläggare sett något hen inte skulle se,
+  och konsumenten behöver inte tolka innehållet maskinellt.
 
 ### IA-FR-05 — Användare, tidpunkt och källa
 
@@ -152,8 +153,6 @@ beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kont
 - **IA-FR-06.2** *[1097]* Eventet ska, när det är tillämpligt, ange vilket ärende och vilken
   regel informationen visades i. Regeln identifieras med `regelId` och `regelVersion` från
   regelns `config.yaml`, inte med fritextnamn, så att loggarna går att söka entydigt.
-- **IA-FR-06.3** *[förslag]* Eventet bör gå att koppla till det anrop som utlöste det, så
-  att en loggpost kan härledas till en specifik begäran vid felsökning och granskning.
 
 ### IA-FR-07 — Tillförlitlighet vid publicering
 
@@ -161,13 +160,12 @@ beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kont
   ska det framgå i den publicerande applikationens egen loggning, så att tappade händelser
   går att upptäcka i efterhand.
 
-### IA-FR-08 — Identitet och dubbletter
+### IA-FR-08 — Identifierare
 
-- **IA-FR-08.1** *[förslag]* Varje event ska ha en egen identifierare, så att konsumenter
-  kan skilja två separata visningar från samma visning levererad mer än en gång.
-- **IA-FR-08.2** *[förslag]* Konsumenter ska kunna behandla eventströmmen idempotent.
-  Eftersom leveransen är at-least-once kan samma event komma flera gånger, och det får inte
-  leda till dubbla poster i ett registerutdrag.
+- **IA-FR-08.1** *[förslag]* Varje event ska ha en egen identifierare, så att konsumenten
+  kan följa meddelandet genom sina egna steg. Nyttan ligger hos mottagaren; Rimfrost
+  publicerar och följer inte upp. Leveransen är at-least-once, så samma event kan komma
+  flera gånger, och identifieraren gör det möjligt att hantera det utan dubbla poster.
 
 ### IA-FR-09 — Topic
 
@@ -185,8 +183,8 @@ beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kont
 
 ### IA-NFR-02 — Utvecklingsbarhet
 
-- **IA-NFR-02.1** *[förslag]* Kontraktet ska kunna utökas med mer information per individ
-  utan brytande ändringar för befintliga producenter och konsumenter.
+- **IA-NFR-02.1** *[förslag]* Kontraktet ska kunna utökas med mer information utan
+  brytande ändringar för befintliga producenter och konsumenter.
 
 ### IA-NFR-03 — Testbarhet
 
@@ -198,40 +196,41 @@ beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kont
 Kontraktet ligger i dag på 0.1.0 och har inga implementationer. Ändringarna nedan följer av
 kraven, men bör inte göras förrän de öppna punkterna är besvarade.
 
-Ingen av dem är brytande, så länge antagandet i IA-FR-02 håller. Håller det inte behöver
-`individer` göras om till objekt som bär visad information per individ, vilket *är* en
-brytande ändring.
+Ingen av dem är brytande. Om det visar sig att visad information måste kunna härledas till
+en enskild individ i ett event som rör flera, behöver `individer` göras om till objekt som
+bär datan per individ — det *är* en brytande ändring, och frågan ligger under Öppna punkter.
 
 1. `visadInformation` är uppskjutet till FKPOC-1103 enligt beslutet i PR #1. Enligt
-   IA-FR-04.1 ska det bära den faktiska datan, och enligt IA-FR-04.2 ligger det på eventnivå.
-   Strukturen är inte beslutad, se Öppna punkter. Att lägga till fältet som valfritt bryter
-   inte befintliga
+   IA-FR-04.1 ska det bära den faktiska datan, och enligt IA-FR-04.2 ligger det på eventnivå
+   som ett fritt objekt. Att lägga till fältet som valfritt bryter inte befintliga
    konsumenter.
-2. Eventet saknar en egen identifierare. IA-FR-08.1 kräver ett sådant fält.
+2. Eventet saknar en egen identifierare. IA-FR-08.1 kräver ett sådant fält, så att
+   konsumenten kan följa meddelandet genom sina egna steg. Ett nytt valfritt fält bryter
+   inte befintliga konsumenter.
 3. `uppgiftId` är i dag valfritt. IA-FR-06.1 gör det nödvändigt. Beslutet hänger ihop med
    frågan om vyer utan uppgift ska ingå — i så fall behöver Mimer något annat att koppla på.
-4. `individer` har i dag `minItems: 1` utan övre gräns. Enligt IA-FR-02.2 rör ett event exakt
-   en individ. Antingen sätts `maxItems: 1`, eller så lämnas listan som den är och regeln
-   upprätthålls av producenten. Det senare är mer förlåtande om antagandet visar sig fel.
+4. `individer` har i dag `minItems: 1` utan övre gräns, och det ska den fortsätta ha.
+   Eftersom ett event bär allt som visades (IA-FR-02.1) kan ett svar som rör flera individer
+   listas i samma event. Ingen ändring behövs.
 5. `anvandare` behöver bekräftas bära kortnummer enligt IA-FR-05.1. Verifieras mot
    `anropare` i FKPOC-1098 och FKPOC-1103.
 
 ## Öppna punkter
 
 Kolumnen *Beslutas av* är bara ifylld där det finns belägg för det. Där den säger
-"ej utrett" behöver frågan om ägarskap ställas innan frågan i sig kan drivas — börja med
-Lars eller Ulf. Lisa skrev den ursprungliga specen och är närmast kontraktsfrågorna.
+"ej utrett" behöver frågan om ägarskap ställas innan frågan i sig kan drivas.
 
 | Punkt | Berör | Beslutas av |
 |---|---|---|
-| Vyer utan uppgift, t.ex. OUL-listor | IA-FR-06 | Jonas (enligt Lars) — avgör även IA-FR-02 |
-| Struktur och granularitet på den visade datan | IA-FR-04 | Jonas |
+| Vyer utan uppgift, t.ex. OUL-listor. Loggas eventuellt först när en uppgift öppnas, se antagandet under IA-FR-01 | IA-FR-01, IA-FR-06 | FK |
+| Om FK vill ha allt i samma meddelande. Rimfrost läser FKPOC-1080 så, men formuleringen kan tolkas olika | IA-FR-02 | FK |
 | Om en BFF-respons kan visa uppgifter om flera individer | IA-FR-02 | Besvarat för regler: nej. Öppet för uppgiftslistan, som är parkerad |
+| Om eventet ska gå att koppla till anropet som utlöste det, och om det redan finns ett correlation-id i anropskedjan | IA-FR-06 | Ej utrett — nyttan är främst vår egen felsökning, och vi följer inte upp efter publicering |
 | Om information som inte är personbunden ska loggas | IA-FR-02 | Ej utrett |
-| Om datan får reduceras till det som gick till klienten | IA-FR-04 | Ej utrett |
+| Hur mycket av den visade datan eventet får bära — hela paketet eller något reducerat, och om personuppgifter får ingå rakt av | IA-FR-04, IA-NFR-01 | FK |
 | Om utlämnande ska stoppas när eventet inte kan publiceras | IA-FR-07 | Ej utrett |
 | Om kortnummer finns i Rimfrosts anroparkontext | IA-FR-05 | Rimfrost, i FKPOC-1098/1103 |
-| Vilka `typId`-UUID:n som gäller för kortnummer och personnummer | IA-FR-03 | Rimfrost — Lisa närmast |
+| Vilka `typId`-UUID:n som gäller för kortnummer och personnummer | IA-FR-03 | Rimfrost |
 | Om självåtkomst alls ska loggas | IA-FR-05 | Ej utrett — FK-fråga |
 | Vad eventen partitioneras på | IA-FR-09 | Ej utrett |
 | Övre gräns för meddelandestorlek när datan ingår i eventet | IA-FR-04 | Ej utrett |
