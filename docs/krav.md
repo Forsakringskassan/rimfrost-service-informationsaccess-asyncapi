@@ -79,9 +79,9 @@ Utanför ligger också:
 - **IA-FR-01.2** *[förslag]* Avgörande är vad som går från BFF till klient. Information som
   hämtats internt i backend men aldrig skickats vidare ska inte loggas, och det ska inte
   heller krävas kännedom om vad klienten faktiskt renderat på skärmen.
-- **IA-FR-01.3** *[förslag]* Flera BFF:er kan publicera var sitt event för det användaren
-  upplever som en sammanhängande handling, t.ex. en uppgiftslista i portalen följd av att
-  en uppgift öppnas i en regel. Det är avsiktligt och ska inte behandlas som dubbletter.
+- **IA-FR-01.3** *[förslag]* Det användaren upplever som en sammanhängande handling kan ge
+  flera event, publicerade från olika steg och av olika anledningar. Det är avsiktligt och
+  ska inte behandlas som dubbletter.
 
 > **Antagande, obekräftat:** loggningen utlöses när en handläggare öppnar en uppgift, inte
 > när en uppgiftslista visas. Det stämmer med att FKPOC-1080 bara beskriver "en manuell
