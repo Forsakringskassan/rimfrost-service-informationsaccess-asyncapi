@@ -115,12 +115,14 @@ registerutdrag per individ kan produceras utan att eventet delas upp.
 
 ### IA-FR-03 — Vilka individer som ingår
 
-- **IA-FR-03.1** *[1097]* Eventet ska lista de individer vars information faktiskt
-  passerade BFF:en till klienten i just det svaret — inte samtliga individer som är knutna
-  till ärendet.
+- **IA-FR-03.1** *[1097]* Om eventet listar individer ska det vara de individer vars
+  information faktiskt passerade BFF:en till klienten i just det svaret — inte samtliga
+  individer som är knutna till ärendet.
 - **IA-FR-03.2** *[förslag]* Identifieraren för en individ finns i eventet för loggens
   skull. Att en individ förekommer i eventet ska inte tolkas som att identifieraren i sig
   visades för användaren.
+- **IA-FR-03.3** *[FK-svar]* Individerna behöver inte listas separat. Personuppgifterna finns
+  i den visade datan (IA-FR-04.1), och det räcker för FK.
 
 ### IA-FR-04 — Visad information
 
@@ -160,7 +162,9 @@ beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kont
 - **IA-FR-06.1** *[1080]* Eventet ska ange vilken uppgift informationen visades i. Mimers
   koppling till handläggningen bygger på uppgiftens ID, vilket gör fältet nödvändigt och
   inte valfritt. `uppgiftId` gjordes obligatoriskt i PR #1 (commit 32e3499) men blev valfritt
-  igen när specen breddades till alla användare (commit 1ab0786). Konflikten är inte löst.
+  igen när specen breddades till alla användare (commit 1ab0786). FK har bekräftat att både
+  processinstansen och den enskilda uppgiften behövs. Konflikten gäller därför bara GUI som
+  laddas utan enskild uppgift.
 - **IA-FR-06.2** *[1097]* Eventet ska, när det är tillämpligt, ange vilket ärende och vilken
   regel informationen visades i. Regeln identifieras med `regelId` och `regelVersion` från
   regelns `config.yaml`, inte med fritextnamn, så att loggarna går att söka entydigt.
@@ -220,10 +224,10 @@ bär datan per individ — det *är* en brytande ändring, och frågan ligger un
    inte befintliga konsumenter.
 3. `uppgiftId` är i dag valfritt. IA-FR-06.1 gör det nödvändigt. Beslutet hänger nu på om
    portalens uppgiftslista bantas: bara om varje loggat GUI rör en enskild uppgift kan fältet
-   göras obligatoriskt. FK har ännu inte svarat på vad Syfte ska innehålla i övriga fall.
-4. `individer` har i dag `minItems: 1` utan övre gräns, och det ska den fortsätta ha.
-   Eftersom ett event bär allt som visades (IA-FR-02.1) kan ett svar som rör flera individer
-   listas i samma event. Ingen ändring behövs.
+   göras obligatoriskt. FK har bekräftat att den enskilda uppgiften behövs, men inte svarat på
+   vad Syfte ska innehålla när ett GUI laddas utan enskild uppgift.
+4. `individer` behövs inte enligt IA-FR-03.3. Fältet kan ligga kvar som valfritt, men
+   regelramverken fyller inte i det.
 5. `anvandare` ska bära användarens `handlaggarId` enligt IA-FR-05.1. Värdet finns i token
    som BFF:en tar emot. Ingen ändring av kontraktet behövs.
 6. Exemplet `Uppgiftslista` i `asyncapi.yaml` visar portalens uppgiftslista med
@@ -239,7 +243,7 @@ Kolumnen *Beslutas av* är bara ifylld där det finns belägg för det. Där den
 | Punkt | Berör | Beslutas av |
 |---|---|---|
 | Om portalens uppgiftslista ska bantas så att den inte bär personuppgifter, eller loggas som den är. `OperativUppgift` bär i dag `individer` | IA-FR-01, IA-FR-02 | Rimfrost, utifrån FK:s inriktning att hålla nere uppgiftsinformationen i OUL |
-| Vad som ska stå i Syfte när ett GUI laddas utan enskild uppgift, och om "Uppgiftsspecifikationen" avser uppgiftstypen eller uppgiftens id | IA-FR-06 | FK — frågan ställd, ännu obesvarad |
+| Vad som ska stå i Syfte när ett GUI laddas utan enskild uppgift | IA-FR-06 | FK — ännu obesvarad |
 | Om eventet ska gå att koppla till anropet som utlöste det, och om det redan finns ett correlation-id i anropskedjan | IA-FR-06 | Ej utrett — nyttan är främst vår egen felsökning, och vi följer inte upp efter publicering |
 | Om utlämnande ska stoppas när eventet inte kan publiceras | IA-FR-07 | Ej utrett |
 | Var `handlaggarId` läses: i BFF:en direkt från token, vilket kräver att FBFF-FR-03.2 skrivs om, eller i regelns backend | IA-FR-05 | Rimfrost, i FKPOC-1098 |
@@ -260,3 +264,5 @@ grund för kraven märkta **[FK-svar]**.
 | Ska OUL-listor loggas? | Inte undantagna som vy. Inriktningen är att hålla nere uppgiftsinformationen i OUL så att listan slipper bära personuppgifter |
 | Vilken data ska eventet bära? | Bara personuppgifter. Hela payloaden får ingå tills data är märkt med metadata om den är personuppgift |
 | Ska information som inte är personbunden loggas? | Nej, med undantaget ovan |
+| Räcker det att logga vilken regel som utförs, eller behövs den enskilda uppgiftens id? | Både processinstansen och den enskilda uppgiften behövs |
+| Behöver individerna listas separat? | Nej, det räcker med den data som skickas till klienten |
