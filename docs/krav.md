@@ -163,8 +163,9 @@ beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kont
   koppling till handläggningen bygger på uppgiftens ID, vilket gör fältet nödvändigt och
   inte valfritt. `uppgiftId` gjordes obligatoriskt i PR #1 (commit 32e3499) men blev valfritt
   igen när specen breddades till alla användare (commit 1ab0786). FK har bekräftat att både
-  processinstansen och den enskilda uppgiften behövs. Konflikten gäller därför bara GUI som
-  laddas utan enskild uppgift.
+  processinstansen och den enskilda uppgiften behövs. Den nya handläggningsmodellen saknar
+  `processinstansId`, så processinstansen anges med `handlaggningId` tillsammans med
+  `uppgiftId`. Konflikten gäller därför bara GUI som laddas utan enskild uppgift.
 - **IA-FR-06.2** *[1097]* Eventet ska, när det är tillämpligt, ange vilket ärende och vilken
   regel informationen visades i. Regeln identifieras med `regelId` och `regelVersion` från
   regelns `config.yaml`, inte med fritextnamn, så att loggarna går att söka entydigt.
