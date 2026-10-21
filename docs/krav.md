@@ -13,8 +13,8 @@ FKPOC-1080 och ur diskussioner i teamet.
 göra de antaganden som specen vilar på granskningsbara.
 
 `visadInformation` sköts i PR #1 medvetet upp till **FKPOC-1103**, med motiveringen att ett
-tillagt valfritt fält inte bryter befintliga konsumenter. Kraven på det fältet (IA-FR-04)
-finns därför med här, men är inte infriade i dagens kontrakt.
+tillagt valfritt fält inte bryter befintliga konsumenter. Fältet har nu lagts till i
+kontraktets version 0.2.0.
 
 Alla ärenden ligger under **FKPOC-1101** (Logga uppgiftsaccess via nytt kafka interface), som
 i sin tur ligger under **FKPOC-1080**. Varken 1101 eller 1097 har någon beskrivning — 1080 är
@@ -128,7 +128,7 @@ registerutdrag per individ kan produceras utan att eventet delas upp.
 
 Fältet `visadInformation` utelämnades medvetet i PR #1 och hör till **FKPOC-1103**.
 Motiveringen var att ett tillagt valfritt fält inte bryter befintliga konsumenter, så
-beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kontrakt.
+beslutet kunde skjutas upp. Fältet finns i kontraktet från version 0.2.0.
 
 - **IA-FR-04.1** *[FK-svar]* Eventet ska innehålla de personuppgifter som hämtades för att
   visas för användaren, t.ex. inkomst och diagnos. Information som inte är personuppgifter
@@ -209,29 +209,23 @@ beslutet kunde skjutas upp. Kraven nedan är alltså inte infriade i dagens kont
 
 ## Konsekvenser för nuvarande kontrakt
 
-Kontraktet ligger i dag på 0.1.0 och har inga implementationer. Ändringarna nedan följer av
+Kontraktet ligger i dag på 0.2.0, där `visadInformation` (IA-FR-04) och eventets `id`
+(IA-FR-08.1) har lagts till, och har inga implementationer. Ändringarna nedan följer av
 kraven, men bör inte göras förrän de öppna punkterna är besvarade.
 
 Ingen av dem är brytande. Om det visar sig att visad information måste kunna härledas till
 en enskild individ i ett event som rör flera, behöver `individer` göras om till objekt som
 bär datan per individ — det *är* en brytande ändring, och frågan ligger under Öppna punkter.
 
-1. `visadInformation` är uppskjutet till FKPOC-1103 enligt beslutet i PR #1. Enligt
-   IA-FR-04.1 ska det bära de personuppgifter som hämtades, enligt IA-FR-04.2 som ett fritt
-   objekt på eventnivå, och enligt IA-FR-04.3 får hela payloaden ingå tills datan är märkt med
-   metadata. Att lägga till fältet som valfritt bryter inte befintliga konsumenter.
-2. Eventet saknar en egen identifierare. IA-FR-08.1 kräver ett sådant fält, så att
-   konsumenten kan följa meddelandet genom sina egna steg. Ett nytt valfritt fält bryter
-   inte befintliga konsumenter.
-3. `uppgiftId` är i dag valfritt. IA-FR-06.1 gör det nödvändigt. Beslutet hänger nu på om
+1. `uppgiftId` är i dag valfritt. IA-FR-06.1 gör det nödvändigt. Beslutet hänger nu på om
    portalens uppgiftslista bantas: bara om varje loggat GUI rör en enskild uppgift kan fältet
    göras obligatoriskt. FK har bekräftat att den enskilda uppgiften behövs, men inte svarat på
    vad Syfte ska innehålla när ett GUI laddas utan enskild uppgift.
-4. `individer` behövs inte enligt IA-FR-03.3. Fältet kan ligga kvar som valfritt, men
+2. `individer` behövs inte enligt IA-FR-03.3. Fältet kan ligga kvar som valfritt, men
    regelramverken fyller inte i det.
-5. `anvandare` ska bära användarens `handlaggarId` enligt IA-FR-05.1. Värdet finns i token
+3. `anvandare` ska bära användarens `handlaggarId` enligt IA-FR-05.1. Värdet finns i token
    som BFF:en tar emot. Ingen ändring av kontraktet behövs.
-6. Exemplet `Uppgiftslista` i `asyncapi.yaml` visar portalens uppgiftslista med
+4. Exemplet `Uppgiftslista` i `asyncapi.yaml` visar portalens uppgiftslista med
    `kalla: rimfrost-portal-bff`. Enligt IA-FR-01.1 ska den vyn loggas bara om den bär
    personuppgifter. Exemplet bör tas bort eller skrivas om när frågan om bantningen är
    avgjord.

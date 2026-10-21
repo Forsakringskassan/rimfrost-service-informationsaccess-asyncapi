@@ -1,7 +1,7 @@
 asyncapi: 3.0.0
 info:
   title: Informationsaccess Async API
-  version: 0.1.0
+  version: 0.2.0
   description: Informationsaccess Async API för event som publiceras när information har visats för en användare
 
 channels:
@@ -28,6 +28,7 @@ components:
         - name: Regel
           summary: Användare öppnar en regel
           payload:
+            id: "c7d1e2f3-4a5b-4c6d-8e7f-9a0b1c2d3e4f"
             anvandare:
               typId: "9b1e4f2a-6c3d-4e8b-a7f5-2d0c1b9e8a36"
               varde: "H123456"
@@ -40,6 +41,11 @@ components:
             individer:
               - typId: "4c34906c-03d9-425f-9a1a-062ef6eb88c7"
                 varde: "19901010-1234"
+            visadInformation:
+              kund:
+                fornamn: "Anna"
+                efternamn: "Andersson"
+              ersattningar: []
         - name: Uppgiftslista
           summary: Användare får en uppgift visad i portalen
           payload:
@@ -63,7 +69,10 @@ components:
         - tidpunkt
         - kalla
       properties:
-        # visadInformation (vilken information som visades) läggs till i FKPOC-1103
+        id:
+          type: string
+          format: uuid
+          description: Unikt ID för eventet, så att konsumenten kan följa meddelandet genom sina egna steg
         anvandare:
           $ref: '#/components/schemas/Idtyp'
           description: Användaren som fick informationen visad, t.ex. en handläggare
@@ -96,6 +105,12 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/Idtyp'
+        visadInformation:
+          type: object
+          additionalProperties: true
+          description: >-
+            Den data som skickades till klienten, som ett fritt JSON-objekt. Tills vidare får hela
+            payloaden ingå, även delar som inte är personuppgifter. Innehåller personuppgifter.
 
     Idtyp:
       type: object
