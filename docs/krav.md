@@ -210,8 +210,8 @@ beslutet kunde skjutas upp. Fältet finns i kontraktet från version 0.2.0.
 ## Konsekvenser för nuvarande kontrakt
 
 Kontraktet ligger i dag på 0.2.0, där `visadInformation` (IA-FR-04) och eventets `id`
-(IA-FR-08.1) har lagts till, och har inga implementationer. Ändringarna nedan följer av
-kraven, men bör inte göras förrän de öppna punkterna är besvarade.
+(IA-FR-08.1) har lagts till, och har inga implementationer. De återstående ändringarna nedan
+följer av kraven, men bör inte göras förrän de öppna punkterna är besvarade.
 
 Ingen av dem är brytande. Om det visar sig att visad information måste kunna härledas till
 en enskild individ i ett event som rör flera, behöver `individer` göras om till objekt som

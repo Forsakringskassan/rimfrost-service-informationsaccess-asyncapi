@@ -38,9 +38,6 @@ components:
             uppgiftId: "8a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d"
             regelId: "a11f3429-3a6b-4389-ba1c-c2747b0fb45b"
             regelVersion: "1"
-            individer:
-              - typId: "4c34906c-03d9-425f-9a1a-062ef6eb88c7"
-                varde: "19901010-1234"
             visadInformation:
               kund:
                 fornamn: "Anna"
