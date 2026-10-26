@@ -148,7 +148,8 @@ beslutet kunde skjutas upp. Fältet finns i kontraktet från version 0.2.0.
   med användarens `handlaggarId`. Det finns i den token som BFF:en tar emot och
   vidarebefordrar, som `typId:varde` — samma form som `anvandare`. Det gäller dagens
   dev-token; en riktig inloggningstoken kan se annorlunda ut. Id-värdet i specens exempel är
-  påhittat — se Öppna punkter.
+  påhittat — se Öppna punkter. Regelns backend läser identiteten ur token och skickar den
+  till BFF:en i `informationsaccess.anvandare`, så att BFF:en inte behöver tolka token.
 - **IA-FR-05.2** *[1080]* Eventet ska ange när informationen visades.
 - **IA-FR-05.3** *[1097]* Eventet ska ange vilken applikation som visade informationen och
   publicerade eventet.
@@ -219,8 +220,9 @@ Ingen av dem är brytande.
    portalens uppgiftslista bantas: bara om varje loggat GUI rör en enskild uppgift kan fältet
    göras obligatoriskt. FK har bekräftat att den enskilda uppgiften behövs, men inte svarat på
    vad Syfte ska innehålla när ett GUI laddas utan enskild uppgift.
-2. `anvandare` ska bära användarens `handlaggarId` enligt IA-FR-05.1. Värdet finns i token
-   som BFF:en tar emot. Ingen ändring av kontraktet behövs.
+2. `anvandare` ska bära användarens `handlaggarId` enligt IA-FR-05.1. Regelns backend läser
+   värdet ur token och skickar det i `informationsaccess.anvandare`. Ingen ändring av
+   kontraktet behövs.
 3. Exemplet `Uppgiftslista` i `asyncapi.yaml` visar portalens uppgiftslista med
    `kalla: rimfrost-portal-bff`. Enligt IA-FR-01.1 ska den vyn loggas bara om den bär
    personuppgifter. Exemplet bör tas bort eller skrivas om när frågan om bantningen är
@@ -237,7 +239,6 @@ Kolumnen *Beslutas av* är bara ifylld där det finns belägg för det. Där den
 | Vad som ska stå i Syfte när ett GUI laddas utan enskild uppgift | IA-FR-06 | FK — ännu obesvarad |
 | Om eventet ska gå att koppla till anropet som utlöste det, och om det redan finns ett correlation-id i anropskedjan | IA-FR-06 | Ej utrett — nyttan är främst vår egen felsökning, och vi följer inte upp efter publicering |
 | Om utlämnande ska stoppas när eventet inte kan publiceras | IA-FR-07 | Ej utrett |
-| Var `handlaggarId` läses: i BFF:en direkt från token, vilket kräver att FBFF-FR-03.2 skrivs om, eller i regelns backend | IA-FR-05 | Rimfrost, i FKPOC-1098 |
 | Vilka `typId`-UUID:n som gäller för `handlaggarId` och personnummer | IA-FR-03 | Rimfrost |
 | Om självåtkomst alls ska loggas | IA-FR-05 | Ej utrett — FK-fråga |
 | Vad eventen partitioneras på | IA-FR-09 | Ej utrett |
