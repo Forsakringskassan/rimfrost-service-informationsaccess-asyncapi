@@ -193,9 +193,8 @@ beslutet kunde skjutas upp. Fältet finns i kontraktet från version 0.2.0.
 
 ### IA-NFR-01 — Personuppgifter
 
-- **IA-NFR-01.1** *[FK-svar]* Eventet innehåller personuppgifter — både individernas
-  identifierare och den data som visades (IA-FR-04.1) — och ska behandlas därefter i
-  lagring, åtkomst och gallring.
+- **IA-NFR-01.1** *[FK-svar]* Eventet innehåller personuppgifter, via den data som visades
+  (IA-FR-04.1), och ska behandlas därefter i lagring, åtkomst och gallring.
 
 ### IA-NFR-02 — Utvecklingsbarhet
 
@@ -210,22 +209,19 @@ beslutet kunde skjutas upp. Fältet finns i kontraktet från version 0.2.0.
 ## Konsekvenser för nuvarande kontrakt
 
 Kontraktet ligger i dag på 0.2.0, där `visadInformation` (IA-FR-04) och eventets `id`
-(IA-FR-08.1) har lagts till, och har inga implementationer. De återstående ändringarna nedan
+(IA-FR-08.1) har lagts till och `individer` har tagits bort (IA-FR-03.3). Kontraktet har inga
+implementationer, så borttagningen bryter inget. De återstående ändringarna nedan
 följer av kraven, men bör inte göras förrän de öppna punkterna är besvarade.
 
-Ingen av dem är brytande. Om det visar sig att visad information måste kunna härledas till
-en enskild individ i ett event som rör flera, behöver `individer` göras om till objekt som
-bär datan per individ — det *är* en brytande ändring, och frågan ligger under Öppna punkter.
+Ingen av dem är brytande.
 
 1. `uppgiftId` är i dag valfritt. IA-FR-06.1 gör det nödvändigt. Beslutet hänger nu på om
    portalens uppgiftslista bantas: bara om varje loggat GUI rör en enskild uppgift kan fältet
    göras obligatoriskt. FK har bekräftat att den enskilda uppgiften behövs, men inte svarat på
    vad Syfte ska innehålla när ett GUI laddas utan enskild uppgift.
-2. `individer` behövs inte enligt IA-FR-03.3. Fältet kan ligga kvar som valfritt, men
-   regelramverken fyller inte i det.
-3. `anvandare` ska bära användarens `handlaggarId` enligt IA-FR-05.1. Värdet finns i token
+2. `anvandare` ska bära användarens `handlaggarId` enligt IA-FR-05.1. Värdet finns i token
    som BFF:en tar emot. Ingen ändring av kontraktet behövs.
-4. Exemplet `Uppgiftslista` i `asyncapi.yaml` visar portalens uppgiftslista med
+3. Exemplet `Uppgiftslista` i `asyncapi.yaml` visar portalens uppgiftslista med
    `kalla: rimfrost-portal-bff`. Enligt IA-FR-01.1 ska den vyn loggas bara om den bär
    personuppgifter. Exemplet bör tas bort eller skrivas om när frågan om bantningen är
    avgjord.
